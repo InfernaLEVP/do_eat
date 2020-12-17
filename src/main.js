@@ -1,7 +1,8 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import './registerServiceWorker'
-import router from './router'
-import store from './store'
+import { createApp } from 'vue';
+import App from './App.vue';
+import './registerServiceWorker';
+import router from './router';
+import store from './store';
+import Maska from 'maska';
 
-createApp(App).use(store).use(router).mount('#app')
+window.app = createApp(App).use(store).use(router).use(Maska).mount('#app')
