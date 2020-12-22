@@ -1,5 +1,5 @@
 <template>
-  <div :class="[ 'day', currClass ]">
+  <div :class="[ 'day', currClass ]" :data-foo="currentCalendatDay">
 
     <div class="day__header">
       <img :src="`/img/days/${obj.index}.jpg`" alt="">
@@ -9,15 +9,15 @@
     
 
     <ul class="day__list">
-      <li class="dish" v-for="item in obj.menu" :key="item">
-        <div class="dish__name">{{item}}</div>
+      <li class="dish" v-for="item in obj.menu" :key="item[0]">
+        <div class="dish__name">{{item[0]}}</div>
         <div class="space"></div>
-        <div class="dish__weight">100гр.</div>
+        <div class="dish__weight">{{item[1]}}</div>
       </li>
     </ul>
 
     <div class="day__actions">
-      <button class="md-trigger md-setperspective" data-modal="modal-18">Заказать</button>
+      <button class="md-trigger md-setperspective" data-modal="modal-18" :disabled="isPast()" @click="order">Заказать</button>
       <button class="day__details" @click="showDetails">Подробнее</button>
     </div>
     
@@ -25,19 +25,19 @@
 
   <transition name="fade">
     <teleport to="#details-container" v-if="isTeleported">
-      <div class="details">
+      <div class="details" :class="[ isTeleported ? 'opened-details' : '']">
         <div class="details__wrapper">
 
           <div class="details__photo">
-            <img :src="`/img/days/${obj.index}.jpg`" alt="">
-            <div class="day__name">{{obj.day}}</div>
-            <div class="details__close" @click="hodeDetails"><img src="../assets/close.svg" alt=""></div>
+            <img :class="[ isTeleported ? 'opened-image' : '']" :src="`/img/days/${obj.index}.jpg`" alt="">
+            <div :class="[ 'day__name', isTeleported ? 'opened-pulse' : '']">{{obj.day}}</div>
+            <div :class="[ 'details__close', isTeleported ? 'opened-pulse' : '']" @click="hodeDetails"><img src="../assets/close.svg" alt=""></div>
           </div>
-          <div class="details__title">Комплексный обед</div>
-          <div class="details__price">250 руб.</div>
-          <div class="details__description">{{obj.description}}</div>
+          <div :class="[ 'details__title', isTeleported ? 'opened-title' : '']">Комплексный обед</div>
+          <div :class="[ 'details__price', isTeleported ? 'opened-price' : '']">250 руб.</div>
+          <div :class="[ 'details__description', isTeleported ? 'opened-description' : '']">{{obj.description}}</div>
 
-          <ul class="day__list">
+          <ul :class="[ 'day__list', isTeleported ? 'opened-list' : '']">
             <li class="dish" v-for="item in obj.menu" :key="item">
               <div class="dish__name">{{item}}</div>
               <div class="space"></div>
@@ -45,13 +45,13 @@
             </li>
           </ul>
 
-          <div class="details__actions actions">
+          <div :class="[ 'details__actions', 'actions', isTeleported ? 'opened-button' : '']">
             <button class="minus">-</button>
             <button class="add">Добавить в корзину</button>
             <button class="plus">+</button>
           </div>
 
-          <div class="details__stats">
+          <div :class="[ 'details__stats', isTeleported ? 'opened-button' : '']">
             <div class="item-stat">
               <div>Ккал</div>
               <div>62</div>              
@@ -90,21 +90,39 @@ export default {
     return{
       isTeleported: false,
       currentWeekDay: undefined,
-      currClass: undefined
+      currClass: undefined,
+      currentCalendatDay: undefined
     }
   },
   mounted(){
     this.currentWeekDay = new Date();
     this.currentWeekDay = this.currentWeekDay.getDay();
+    // this.currentWeekDay = 3;
+    
+    if(this.currentWeekDay - this.obj.index < 0){
+      
+      let exactDate = new Date();
+      exactDate.setDate(exactDate.getDate() + Math.abs(this.currentWeekDay - this.obj.index));
+      this.currentCalendatDay = 'на ' + exactDate.getDate().toString() + '.' + ( exactDate.getMonth() + 1 );
+
+    }
 
     this.drawLabel();
   },
   methods:{
     showDetails(){
       this.isTeleported = true;
+
     },
     hodeDetails(){
       this.isTeleported = false;
+    },
+    isPast(){
+      if(this.obj.index < this.currentWeekDay){
+        return true;
+      }else{
+        return false;
+      }
     },
     drawLabel(){
       if(this.obj.index > this.currentWeekDay){
@@ -114,6 +132,14 @@ export default {
       }else if(this.obj.index == this.currentWeekDay){
         this.currClass = 'today';
       }
+    },
+    order(){
+      // console.log('order button click');
+      const day = {
+        day: this.obj.index,
+        messsage: this.currentCalendatDay
+      };
+      this.emitter.emit('select-day', day);
     }
   }
 }
@@ -122,16 +148,28 @@ export default {
 <style>
   .day{
     padding: 20px;
-    background: rgba(51,51,51,.7);
-    border-radius: 18px;
+    /* background: rgba(51,51,51,.7); */
+    background: white;
     position: relative;
     font-weight: 300;
     line-height: 1.8;
     text-transform: uppercase;
-    width: 21%;
-    margin-bottom: 6rem;
+    width: 26%;
+
+    background-color: #fbfbfb;
+    border-radius: 4px;
+    border: 1px solid #d0d0d0;
+    padding: 10px;
+    margin: 10px 0 20px 0;
+    padding-bottom: 15px;
   }
   @media(max-width: 992px){
+    .day{
+      width: 55%;
+      margin: 0 auto;
+    }
+  }
+  @media(max-width: 560px){
     .day{
       width: 75%;
       margin: 0 auto;
@@ -139,7 +177,7 @@ export default {
   }
 
   .day:before{
-    content: '';
+    /* content: ''; */
     position: absolute;
     top: 0;
     left: 0;
@@ -155,6 +193,18 @@ export default {
   .day__header{
     position: relative;
     border-bottom: 2px solid white;
+
+    width: 116%;
+    left: -8%;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.28);
+    border-radius: 2px;
+    display: flex;
+  }
+  .day__header img{
+    object-fit: cover;
+    display: flex;
+    position: relative;
+    width: 100%;
   }
 
   .day__name{
@@ -182,22 +232,32 @@ export default {
   .day__list{
     list-style: none;
     padding-left: 0;
+    position: relative;
+    z-index: 5;
+    color: #303030;
+    border-bottom: 1px solid #dadada;
+    border-top: 1px solid #dadada;
+    padding: 15px 0;
   }
 
   /* Today */
+  .day:after{
+    color: black;
+  }
   .day.today{
-    background: rgba(51,51,51,.7);
+    /* background: rgba(51,51,51,.7); */
+    background: #fbfbfb;
   }
   .day.day.today:after{
     content: 'Cегодня в меню!';
     display: flex;
     position: absolute;
     top: 0;
-    left: 0;
-    transform: rotate(-45deg) translate(-36px, -20px);
+    right: 0;
+    transform: rotate(45deg) translate(46px, -20px);
     font-size: 13px;
     z-index: 555;
-    background: rgba(6, 193, 103, 0.7);
+    background: rgba(6, 193, 103, 1);
     border-radius: 8px;
     padding: 0 7px;
   }
@@ -207,25 +267,25 @@ export default {
     display: flex;
     position: absolute;
     top: 0;
-    left: 0;
-    transform: rotate(-45deg) translate(-36px, -20px);
+    right: 0;
+    transform: rotate(45deg) translate(62px, -30px);
     font-size: 13px;
     z-index: 555;
-    background: rgba(244, 67, 54, 0.7);
+    background: rgba(244, 67, 54, 1);
     border-radius: 8px;
     padding: 0 7px;
   }
 
   .day.day.forward:after{
-    content: 'На завтра';
+    content: attr(data-foo) ' ';
     display: flex;
     position: absolute;
     top: 0;
-    left: 0;
-    transform: rotate(-45deg) translate(-36px, -20px);
+    right: 0;
+    transform: rotate(45deg) translate(24px, -20px);
     font-size: 13px;
     z-index: 555;
-    background: rgba(255,255,153, 0.7);
+    background: rgba(255,255,153, 1);
     border-radius: 8px;
     padding: 0 7px;
   }
@@ -245,15 +305,21 @@ export default {
     line-height: 1.1;
     margin-bottom: 8.5px;
   }
+  @media(max-width: 400px){
+    .dish{
+      font-size: 11px;
+    }
+  }
   .dish__name{
     white-space: nowrap;
+    /* max-width: 80%; */
   }
   .dish__weight{
-
+    text-transform: none;
   }
   .space{
     flex: 1;
-    border-bottom: 1px dashed white;
+    border-bottom: 1px dashed #303030;
   }
 
   .day__actions{
@@ -274,7 +340,7 @@ export default {
   }
   .details{
     position: fixed;
-    z-index: 999;
+    z-index: 99999;
     width: 100%;
     height: 100%;
     top: 0;
@@ -290,12 +356,14 @@ export default {
     position: absolute;
     right: 0px;
     top: 0px;
-    transform: translate(10px, -10px);
+    transform: translate(10px, -10px) scale(0);
     background: white;
     padding: 10px;
     border: 1px solid #333;
     z-index: 15;
     display: flex;
+    align-items: flex-start;
+    cursor: pointer;
   }
   .details__close img{
     max-width: 30px;
@@ -311,14 +379,24 @@ export default {
     overflow-x: scroll;
     max-height: 96vh;
   }
+  @media(min-width: 992px){
+    .details__wrapper{
+      overflow-x: hidden;
+    }
+  }
   
   .details__photo{
     position: relative;
   }
+  .details__photo > img{
+    transform: translate3d(0,50%,0);
+    opacity: 0;
+  }
+
   .details__photo .day__name{
     border: 1px solid #333;
     padding: 8px 15px;
-    transform: translate(-10px, -10px);
+    transform: translate(-10px, -10px) scale(0);
   }
 
   .details__title{
@@ -327,6 +405,9 @@ export default {
     position: relative;
     margin-top: 5px;
     padding-top: 20px;
+
+    transform: translate3d(0,50%,0);
+    opacity: 0;
   }
   .details__title:before {
     content: "";
@@ -345,6 +426,19 @@ export default {
     font-weight: 500;
     margin-bottom: 30px;
     margin-top: 7px;
+
+    transform: translate3d(0,50%,0);
+    opacity: 0;
+  }
+
+  .details__description{
+    transform: translate3d(0,50%,0);
+    opacity: 0;
+  }
+
+  .details .day__list{
+    transform: translate3d(0,50%,0);
+    opacity: 0;
   }
 
   .details__actions{
@@ -355,6 +449,9 @@ export default {
     align-items: center;
     position: relative;
     margin-top: 35px;
+
+    transform: translate3d(0,50%,0);
+    opacity: 0;
   }
   .details__actions:before {
     content: "";
@@ -396,6 +493,9 @@ export default {
     display: flex;
     justify-content: space-between;
     font-size: 13px;
+
+    transform: translate3d(0,50%,0);
+    opacity: 0;
   }
   .item-stat div:first-child{
     font-weight: 500;
@@ -416,5 +516,68 @@ export default {
   .fade-enter-from,
   .fade-leave-to {
     opacity: 0;
+  }
+
+  /* Details Open Animations */
+  .opened-details{
+    animation: wrapperShow 0.5s;
+  }
+  @keyframes wrapperShow{
+    from{
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    to{
+      opacity: 1;
+      transform: translateY(0%);
+    }
+  }
+
+  .opened-pulse{
+    animation: oPulse 0.25s forwards;
+    animation-delay: 0.4s;
+  }
+  @keyframes oPulse {
+    from{
+      transform: scale(0);
+    }
+    to{
+      transform: scale(1);
+    }
+  }
+
+  .opened-image{
+    animation: oImage 0.35s forwards;
+    animation-delay: 0.5s;
+  }
+  .opened-title{
+    animation: oImage 0.35s forwards;
+    animation-delay: 0.65s;
+  }
+  .opened-price{
+    animation: oImage 0.35s forwards;
+    animation-delay: 0.8s;
+  }
+  .opened-description{
+    animation: oImage 0.35s forwards;
+    animation-delay: 0.95s;
+  }
+  .opened-list{
+    animation: oImage 0.35s forwards;
+    animation-delay: 1.1s;
+  }
+  .opened-button{
+    animation: oImage 0.35s forwards;
+    animation-delay: 1.25s;
+  }
+  @keyframes oImage {
+    from{
+      transform: translate3d(0,50%,0);
+      opacity: 0;
+    }
+    to{
+      transform: translate(0%, 0px);
+      opacity: 1;
+    }
   }
 </style>

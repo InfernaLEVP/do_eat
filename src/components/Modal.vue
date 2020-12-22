@@ -7,6 +7,7 @@
           <div class="mask"></div>
 
           <div class="form">
+              <div id="await-animation"></div>
               <div class="md-close" @click="flushForm"><img src="../assets/close.svg" alt=""></div>
               <transition name="slide-fade" mode="out-in">
               <div v-if="!formSend">
@@ -14,6 +15,9 @@
                 <p class="form__message">Заполните ваши контактные данные и наш
                   менеджер перезвонит вам в кротчайшие
                   сроки!
+                  <span class="order-date">
+                    {{ orderDate() }}
+                  </span>
                 </p>
 
                 <div class="form__body">
@@ -56,7 +60,7 @@
                           @input="adressInput($event)"
                           @focus="adressFocused = true">
                           
-                        <div class="autocomplete" v-if="streets && adressFocused">
+                        <div :class="[ 'autocomplete', streets.suggestions.length <= 1 ? 'no-match-street' : '' ]" v-if="streets && adressFocused">
                           <div class="autocomplete-item" v-for="street in streets.suggestions" :key="street.value">
                             <div v-if="street.value !== 'Респ Крым, г Симферополь'" class="auto-item" @click="setAdress(street.value, street)">{{street.value}}</div>
                           </div>
@@ -65,13 +69,13 @@
 
                       <div class="form__input">
                         <label for="phone">Комментарий</label>
-                        <input type="text" id="comment">
+                        <input type="text" id="comment" v-model="comment">
                       </div>
 
                       <div class="count">
                         <div class="count__input">
                           <button id="c-minus" disabled class="disabled-input" @click="countMinus($event)">-</button>
-                          <input type="number" class="counter" id="counter" v-model="count">
+                          <input type="number" class="counter" id="counter" min="1" max="100" v-model="count" @change="minusWatch($event)" @input="minusWatch($event)">
                           <button id="c-plus" @click="countPlus($event)">+</button>
                           <!-- <label for="counter">Количество</label> -->
                         </div>
@@ -85,7 +89,7 @@
                   </transition>
                 </div>
                 <div class="buttons">
-                    <button class="md-back" @click="step = 1">
+                    <button :class="[ 'md-back', step === 1 ? 'disabled-back' : '' ]" @click="step = 1">
                         <svg x="0px" y="0px" width="15"
                           viewBox="0 0 31.494 31.494" style="enable-background:new 0 0 31.494 31.494;" xml:space="preserve">
                             <path style="fill:#1E201D;" d="M10.273,5.009c0.444-0.444,1.143-0.444,1.587,0c0.429,0.429,0.429,1.143,0,1.571l-8.047,8.047h26.554
@@ -95,7 +99,7 @@
                         Вернуться
                     </button>
                     <transition name="slide-fade" mode="out-in">
-                      <button class="md-next" v-if="step === 1" @click="nextStep"> 
+                      <button id="md-next" class="md-next" v-if="step === 1" @click="nextStep"> 
                           Далее
                           <svg x="0px" y="0px" width="15"
                             viewBox="0 0 31.494 31.494" style="enable-background:new 0 0 31.494 31.494;transform: rotate(180deg);" xml:space="preserve">
@@ -104,15 +108,16 @@
                               c-0.444,0.444-1.143,0.444-1.587,0l-9.952-9.952c-0.429-0.429-0.429-1.143,0-1.571L10.273,5.009z"/>
                           </svg>
                       </button>
-                      <input @click="sendOrder" class="form__send" type="submit" value="ОТПРАВИТЬ" v-else>
+                      <button @click="sendOrder" class="form__send" type="submit" v-else>ОТПРАВИТЬ</button>
                     </transition>
                 </div>
               </div>
               <div v-else>
-                <p class="form__title">Ваш Заказ принят!</p>
+                <p class="form__title order-success">Заказ принят!</p>
                 <p class="form__message">
                   Наш менеджер перезвонит вам в кротчайшие сроки!
                 </p>
+                <div id="delivery"></div>
               </div>
               </transition>
           </div>
@@ -130,12 +135,33 @@ import { IMaskDirective } from 'vue-imask';
 export default {
 
   mounted(){
+    this.currentDay = new Date();
+    this.currentDay = this.currentDay.getDay();
+
+    this.emitter.on('select-day', day => {
+      this.chosenDay = day.day;
+      this.dateMessage = day.messsage;
+      // console.log(`Chosen day: ${day} !`);
+    });
+
     setInterval(() => {
       this.init();
     }, 2000);
+
+    const ajaxWait = document.getElementById('await-animation');
+    window.lottie.loadAnimation({
+      container: ajaxWait, // the dom element that will contain the animation
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: 'https://assets3.lottiefiles.com/packages/lf20_5pXvNC.json' // the path to the animation json
+    });
   },
   data(){
     return{
+      chosenDay: undefined,
+      dateMessage: undefined,
+      currentDay: undefined,
       formSend: false,
       step: 1,
       phoneInput: '',
@@ -145,7 +171,8 @@ export default {
       adressFocused: false,
       clientAdress: '',
       agreenment: false,
-      count: 1
+      count: 1,
+      comment: ''
     }
   },
   methods: {
@@ -189,6 +216,16 @@ export default {
 
       } );
 
+    },
+    orderDate: function (){
+      console.log(`Chosen: ${this.chosenDay} || Current: ${this.currentDay}`);
+      if(this.chosenDay == this.currentDay){
+        return `Доставка на сегодня`;
+      }else if(this.chosenDay - this.currentDay === 1){
+        return `Доставка на завтра`;
+      }else{
+        return `Доставка ${this.dateMessage}`;
+      }
     },
     nextStep: function (event){
       document.querySelector('#phone').classList.remove('input-error');
@@ -241,7 +278,7 @@ export default {
     phoneChange: function(){
       if(this.phoneInput.length === 18){
         document.querySelector('#phone').classList.add('ok-input');
-        document.querySelector('#agreenment').focus();
+        document.querySelector('#md-next').focus();
       }else{
         document.querySelector('#phone').classList.remove('ok-input');        
       }
@@ -291,6 +328,8 @@ export default {
       }
     },
     countMinus: function (event){
+      const plus = document.querySelector('#c-plus');
+
       if(this.count === 1){
         return false;
       }
@@ -299,10 +338,40 @@ export default {
         event.target.disabled = true;
         event.target.classList.add('disabled-input');
       }
+
+      if(plus.disabled){
+        plus.disabled = false;
+        plus.classList.remove('disabled-input');
+      }
+    },
+    minusWatch: function (event){
+      const minus = document.querySelector('#c-minus');
+      const plus = document.querySelector('#c-plus');
+      if(this.count > 1){
+        if(minus.disabled){
+          minus.disabled = false;
+          minus.classList.remove('disabled-input');
+        }
+      }else{
+        this.count = 1;
+        minus.classList.add('disabled-input');
+        minus.disabled = true;
+      }
+      if(this.count > 100){
+        this.count = 100;
+        plus.classList.add('disabled-input');
+        plus.disabled = true;
+      }
     },
     countPlus: function (event){
       this.count++;
 
+      if(this.count > 100){
+        const plus = document.querySelector('#c-plus');
+        this.count = 100;
+        plus.classList.add('disabled-input');
+        plus.disabled = true;
+      }
       const minus = document.querySelector('#c-minus');
       if(minus.disabled){
         minus.disabled = false;
@@ -314,19 +383,93 @@ export default {
     adressValidate: function (){
       document.querySelector('#address').classList.remove('input-error');
       if(this.clientAdress === ''){
-        setTimeout(() => {
-          document.querySelector('#address').classList.add('input-error');
-        }, 150);
-        return false;
+
+        if(this.searchStreet.length < 6){
+          setTimeout(() => {
+            document.querySelector('#address').classList.add('input-error');
+          }, 150);
+          return false;
+        }else{
+          this.clientAdress = this.searchStreet;
+          return true;
+        }
+        
       }else{
         return true;
       }
+    },
+    postData: async function (url = '', data = {}) {
+      // Default options are marked with *
+      const response = await fetch(url, {
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, *cors, same-origin
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: 'follow', // manual, *follow, error
+        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        body: JSON.stringify(data) // body data type must match "Content-Type" header
+      });
+      return response.json(); // parses JSON response into native JavaScript objects
     },
     sendOrder: function (){
       const isAdressValidated = this.adressValidate();
 
       if(isAdressValidated){
-        this.formSend = true;
+
+        document.getElementById('await-animation').style.display = 'flex';
+        const _now = new Date();
+        const orderTime = _now.getHours()  + ':' + ( _now.getMinutes() < 10 ? '0' + _now.getMinutes()  : _now.getMinutes());
+        const data = {
+          phoneInput: this.phoneInput,
+          searchName: this.searchName,
+          clientAdress: this.clientAdress,
+          agreenment: this.agreenment,
+          count: this.count,
+          chosenDay: this.chosenDay,
+          dateMessage: this.dateMessage,
+          currentDay: this.currentDay,
+          comment: this.comment,
+          orderTime: orderTime
+        }
+        //185.231.155.104:8080
+        this.postData('http://localhost:3000/api/orders', data) 
+          .then(data => {
+            console.log(data); // JSON data parsed by `data.json()` call
+
+            setTimeout(() => {
+              document.getElementById('await-animation').style.display = 'none';
+              this.formSend = true;
+
+              // 
+                setTimeout(() => {
+                  console.log('LOTTIE');
+                  const element = document.getElementById('delivery');
+                  try{
+                    element.innerHTML = '';
+                  }catch{};
+                  window.lottie.loadAnimation({
+                    container: element, // the dom element that will contain the animation
+                    renderer: 'svg',
+                    loop: true,
+                    autoplay: true,
+                    path: 'https://assets9.lottiefiles.com/temp/lf20_IxpQni.json' // the path to the animation json
+                  });
+                  
+                }, 700);
+              // 
+            }, 2000);
+            
+          })
+          .catch(err => {
+            console.log(err);
+            document.getElementById('await-animation').style.display = 'none';
+            this.formSend = false;
+          });
+        
       }else{
 
       }
@@ -341,6 +484,19 @@ export default {
       this.streets = undefined;
       this.agreenment = false;
       this.count = 1;
+      try{
+        document.querySelector('#address').classList.remove('input-error');
+        document.querySelector('#address').classList.remove('ok-input');
+      }catch{}
+      try{
+        document.querySelector('#phone').classList.remove('input-error'); 
+        document.querySelector('#phone').classList.remove('ok-input'); 
+      }catch{}
+      try{
+        document.querySelector('.agreenment').classList.add('input-error');
+        document.querySelector('.agreenment').classList.add('ok-input');
+      }catch{}
+      
     }
   },
   computed: {
@@ -388,6 +544,9 @@ export default {
       max-height: 90vh;
       overflow: scroll;
     }
+    .md-modal{
+      width: 85%;
+    }
   }
   .md-overlay {
     position: fixed;
@@ -418,8 +577,9 @@ export default {
     align-items: stretch;
   }
   .md-content .mask {
-    background: url(/img/mask.jpg);
+    background: url(../assets/mask.jpg);
     background-size: cover;
+    background-position: 50%;
     width: 35%;
   }
   @media (max-width: 992px) {
@@ -431,11 +591,13 @@ export default {
   .md-content .form {
     width: 65%;
     padding: 50px 100px;
+    position: relative;
   }
   @media (max-width: 992px) {
     .md-content .form {
       width: 100%;
       padding: 25px 15px;
+      min-height: 70vh;
     }
   }
   .md-content .form__title {
@@ -453,6 +615,7 @@ export default {
     margin-bottom: 30px;
     font-size: 17px;
     font-weight: 400;
+    padding-right: 20px;
 
     border-bottom: 1px solid #333;
     border-top: 1px solid #333;
@@ -503,6 +666,11 @@ export default {
     color: #788995;
     display: block;
     width: 100%;
+  }
+  @media(max-width: 992px){
+    .md-content .form__body input {
+      font-size: 16px;
+    }
   }
   .md-content .form__body .agreenment {
     display: flex;
@@ -575,6 +743,8 @@ export default {
     border: 1px solid #333;
     z-index: 15;
     display: flex;
+    align-items: flex-start;
+    cursor: pointer;
   }
   .md-content .form .md-close img{
     width: 20px;
@@ -584,7 +754,7 @@ export default {
     background: transparent;
     font-size: 16px;
     font-weight: 400;
-    color: #788995;
+    color: #333;
     border: none;
     display: flex;
     align-items: center;
@@ -699,12 +869,13 @@ export default {
     padding: 6px 0;
     margin-bottom: 5px;
     border-bottom: 1px solid #333;
+    cursor: pointer;
   }
 
   /* Checkbox */
   .agreenment{
     position: relative;
-    padding-left: 2.7em;
+    /* padding-left: 2.7em; */
   }
   .md-content .form__body .agreenment__input{
     -webkit-appearance: none;
@@ -715,32 +886,41 @@ export default {
   }
   .agreenment__box{
     position: absolute;
-    margin-left: -2.7em;
+    /* margin-left: -2.7em; */
+    pointer-events: none;
     width: 2em;
     height: 2em;
-    background-image: url(../assets/checkbox/off.svg);
+    /* background-image: url(../assets/checkbox/off.svg); */
+    background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"%3E%3Crect x="3" y="3" width="14" height="14" fill="%23fff" stroke="%234a90e2" stroke-width="2" rx="2"/%3E%3C/svg%3E');
   }
   .input-error .agreenment__input + .agreenment__box,
   .input-error .agreenment__input:focus + .agreenment__box{
-    background-image: url(../assets/checkbox/off-error.svg);
+    /* background-image: url(../assets/checkbox/off-error.svg); */
+    background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"%3E%3Crect x="3" y="3" width="14" height="14" fill="%23fff" stroke="%23f44336" stroke-width="2" rx="2"/%3E%3C/svg%3E');
   }
   .agreenment__input:checked + .agreenment__box{
-    background-image: url(../assets/checkbox/on.svg);
+    /* background-image: url(../assets/checkbox/on.svg); */
+    background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"%3E%3Crect x="2" y="2" width="16" height="16" fill="%234A90E2" rx="3"/%3E%3Cpolyline fill="none" stroke="%23fff" stroke-width="3" points="5 9 9 13 15 6"/%3E%3C/svg%3E');
   }
   .agreenment__input:focus + .agreenment__box{
-    background-image: url(../assets/checkbox/off-focused.svg);
+    /* background-image: url(../assets/checkbox/off-focused.svg); */
+    background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"%3E%3Crect width="20" height="20" fill="%237ed321" rx="4"/%3E%3Crect width="14" height="14" x="3" y="3" fill="%23fff" stroke="%234a90e2" stroke-width="2" rx="2"/%3E%3C/svg%3E');
   }
   .agreenment__input:checked:focus + .agreenment__box{
-    background-image: url(../assets/checkbox/on-focused.svg);
+    /* background-image: url(../assets/checkbox/on-focused.svg); */
+    background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"%3E%3Crect width="20" height="20" fill="%237ed321" rx="4"/%3E%3Crect width="16" height="16" x="2" y="2" fill="%234a90e2" rx="3"/%3E%3Cpolyline fill="none" stroke="%23fff" stroke-width="3" points="5 9 9 13 15 6"/%3E%3C/svg%3E');
   }
   .agreenment__input:disabled + .agreenment__box{
-    background-image: url(../assets/checkbox/off-disabled.svg);
+    /* background-image: url(../assets/checkbox/off-disabled.svg); */
+    background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"%3E%3Crect x="3" y="3" width="14" height="14" fill="%23fff" stroke="%239b9b9b" stroke-width="2" rx="2"/%3E%3C/svg%3E');
   }
   .agreenment__input:checked:disabled + .agreenment__box{
-    background-image: url(../assets/checkbox/on-disabled.svg);
+    /* background-image: url(../assets/checkbox/on-disabled.svg); */
+    background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"%3E%3Crect x="2" y="2" width="16" height="16" fill="%239B9B9B" rx="3"/%3E%3Cpolyline fill="none" stroke="%23FFF" stroke-width="3" points="5 9 9 13 15 6"/%3E%3C/svg%3E');
   }
   .agreenment__label{
-
+    padding-left: 2.7em;
+    cursor: pointer;
   }
 
   /* Counter */
@@ -796,4 +976,37 @@ export default {
     opacity: 0;
   }
   
+  .order-success{
+    margin-top: 35px;
+  }
+  .disabled-back{
+    opacity: .4;
+    pointer-events: none;
+    cursor:not-allowed;
+  }
+
+  .no-match-street{
+    display: none!important;
+  }
+
+  /* Await */
+  #await-animation{
+    position: absolute;
+    top:0;
+    left: 0;
+    z-index: 555;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+  }
+
+  .order-date{
+    display: flex;
+    margin: 1rem 0;
+    font-weight: 900;
+    color: yellowgreen;
+    font-size: 1.3rem;
+  }
+
 </style>

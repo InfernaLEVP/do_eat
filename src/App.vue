@@ -86,6 +86,7 @@ export default {
   button{
     background: transparent;
     border: none;
+    cursor: pointer;
   }
   .c_container{
     padding-left: 4rem;

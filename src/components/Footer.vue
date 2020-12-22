@@ -12,8 +12,8 @@
       <div class="footer__socials">
         <div class="footer__head">Напишите нам</div>
         <div style="display: flex;flex-wrap: wrap;">
-          <a href="#" class="button telegram"><span>telegram</span></a>
-          <a href="#" class="button whatsapp"><span>facebook</span></a>
+          <a href="https://telegram.me/justdoeat82" class="button telegram"><span>telegram</span></a>
+          <a href="https://api.whatsapp.com/send?phone=79781115865" class="button whatsapp"><span>whatsapp</span></a>
         </div>
       </div>
 
@@ -21,10 +21,10 @@
         <div class="footer__info-wrap">
           <div class="footer__info">
             <!-- <div class="footer__head">Информация</div> -->
-            <a href="#">Договор на участие</a>
+            <!-- <a href="#">Договор на участие</a>
             <a href="#">Реквизиты организации</a>
             <a href="#" style="line-height: 1.1;">Согласие на обработку <br> персональных данных</a>
-            <a href="#">Информация о конфиденциальности</a>
+            <a href="#">Информация о конфиденциальности</a> -->
           </div>
         </div>
       </div>
