@@ -103,7 +103,7 @@
     display: flex;
     width: 100%;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: flex-start;
     /* padding-right: 10%; */
     padding: 8rem 0;
   }

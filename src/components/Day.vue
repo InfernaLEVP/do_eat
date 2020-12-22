@@ -160,8 +160,9 @@ export default {
     border-radius: 4px;
     border: 1px solid #d0d0d0;
     padding: 10px;
-    margin: 10px 0 20px 0;
+    margin: 20px 30px 10px;
     padding-bottom: 15px;
+    box-shadow: 2px 2px 10px #cecece;
   }
   @media(max-width: 992px){
     .day{
