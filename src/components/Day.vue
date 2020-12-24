@@ -17,7 +17,7 @@
 
     <div class="day__actions">
       <button class="md-trigger md-setperspective" data-modal="modal-18" :disabled="isPast()" @click="order">Заказать</button>
-      <button class="day__details" @click="showDetails">Подробне</button>
+      <button class="day__details" @click="showDetails">Подробнее</button>
     </div>
     
   </div>
