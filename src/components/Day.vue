@@ -333,6 +333,10 @@ export default {
     padding: 7px 10px;
     width: 48%;
   }
+  .day__details{
+    opacity: 0;
+    pointer-events: none;
+  }
 
   /* Details */
   #details-container{

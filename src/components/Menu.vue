@@ -2,7 +2,10 @@
   <div class="menu c_container">
     
     <h1 class="menu__title">Доставка <br> комплексных обедов</h1>
-    <div class="menu__slogan">Заказы принимаются до 11:30 утра</div>
+    <!-- <div class="menu__slogan">Заказы принимаются до 11:30 утра</div> -->
+    <h2 style="color:#333;"> С наступающим Новым годом! </h2>
+
+    <p style="color:#333;">Доставка начнёт работу с 11.01.2021 🤙</p>
 
     <div class="menu__wrapper">
 
@@ -118,14 +121,20 @@
     margin-top: 0;
     color: #333;  
     text-align: left;
-    padding-left: 1.8rem;
+    /* padding-left: 1.8rem; */
     font-size: 1.8em;
     padding-top: 25px;
   }
   @media(max-width: 992px)
   {
     .menu__title{
-
+      padding-left: 1.8rem;
+    }
+    .menu__title + h2{
+      padding-left: 1.8rem;
+    }
+    .menu__title + h2 + p{
+      padding-left: 1.8rem;
     }
   }
   @media(max-width: 375px)
@@ -134,6 +143,16 @@
       padding-left: 1.3rem;
       font-size: 1.5em;
       padding-top: 15px;
+    }
+    .menu__title + h2{
+      padding-left: 1.3rem;
+      font-size: 1.5em;
+      padding-right: 30px;
+    }
+    .menu__title + h2 + p{
+      padding-left: 1.3rem;
+      font-size: 1.1em;
+      padding-right: 30px;
     }
   }
 
