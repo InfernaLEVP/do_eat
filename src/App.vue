@@ -43,108 +43,68 @@ export default {
 <style>
   /* Variables */
   :root {
-    --title-font: 'kyiv';
-    --text-font: 'RobotoMono';
-    --bold-font: 'SuisseIntl-Medium';
-    --title-size: 6.1rem;
-    --subtitle-size: 4.9rem;
-    --text-size: 2.2rem;
-    --title-lh: 1.6;
-    --text-lh: 1.65;
-
-    --title-size-sm: 4.1rem;
-    --subtitle-size-sm: 3.8rem;
-    --text-size-sm: 3.6rem;
-    --title-lh-sm: 1.4;
-    --text-lh-sm: 1.55;
-
-    --basic-color: #000000;
-    --red: #fa0000;
-    --light-red: #EC543F;
-    --white: #ffffff;
+    --brand-color: #f74462;
+    --secondary-bc-color: #e9e9e9;
   }
 
-  #app {
-    
-  }
-  *{
+  #app {}
+
+  *,
+  *:before,
+  *:after {
     box-sizing: border-box;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    -webkit-tap-highlight-color: transparent;
-    outline: none;
-  }
-  body{
-    margin: 0;
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    /* text-align: center; */
-    color: #2c3e50;
   }
 
-  button{
-    background: transparent;
-    border: none;
+  body {
+    min-width: 320px;
+    margin: 0;
+    background-color: #ffffff;
+    color: #333333;
+    font-size: 0.875rem;
+    font-family: "Avenir", Helvetica, Arial, sans-serif;
+  }
+
+  button {
+    background-color: transparent;
     cursor: pointer;
   }
-  .c_container{
-    padding-left: 4rem;
-    padding-right: 4rem;
-  }
-  @media screen and (max-width: 992px){
-    .c_container{
-      padding-left: 1.8rem;
-      padding-right: 1.8rem;
-    }
-  }
-  img{
+
+  img {
+    display: block;
     max-width: 100%;
+    height: auto;
   }
 
-  /* Button */
-  .button{
-    background-color: var(--white);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: fit-content;
-    text-transform: uppercase;
-    margin: 1.5rem 0;
-    text-decoration: none;
-    font-size: 28px;
-    position: relative;
-    transition: all .3s;
-    border: 2px solid #333333;
-  }
-  .button:hover{
-    background-color: #333333!important;
-    color: white!important;
-  }
-  .button span{
-    position: relative;
-    z-index: 5;
-    padding: 8px 35px;
-  }
-
-  @media screen and (max-width: 992px){
-    .button{
-      font-size: 2rem;
-    }
-  }
-  ::selection {
-    background: #ffff57;
-  }
-  a{
+  a {
     color: inherit;
     text-decoration: none;
   }
 
-  /* Spacer */
-  .spacer{
-
+  .visually-hidden:not(:focus):not(:active),
+  input[type="checkbox"].visually-hidden,
+  input[type="radio"].visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    border: 0;
+    padding: 0;
+    clip: rect(0 0 0 0);
+    overflow: hidden;
   }
-  .spacer-light{
 
+  .button {
+    display: block;
+    padding: 8px 15px;
+    font: inherit;
+    text-decoration: none;
+    text-align: center;
+    word-wrap: break-word;
+    color: inherit;
+    border: 1px solid;
+    overflow: hidden;
+    transition: 0.1s;
   }
 </style>

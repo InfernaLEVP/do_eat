@@ -16,8 +16,8 @@
     </ul>
 
     <div class="day__actions">
-      <button class="md-trigger md-setperspective" data-modal="modal-18" :disabled="isPast()" @click="order">Заказать</button>
-      <button class="day__details" @click="showDetails">Подробнее</button>
+      <button class="day__button button md-trigger md-setperspective" data-modal="modal-18" :disabled="isPast()" @click="order">Заказать</button>
+      <button class="day__button button" @click="showDetails">Подробнее</button>
     </div>
     
   </div>
@@ -145,63 +145,42 @@ export default {
 
 <style>
   .day {
+    position: relative;
     display: flex;
     flex-direction: column;
-    position: relative;
     width: 100%;
-    min-width: 290px;
-    max-width: 470px;
-    padding-bottom: 25px;
-    background: #ffffff;
+    max-width: 374px;
+    padding-bottom: 20px;
+    background-color: #ffffff;
+    border: 1px solid #cecece;
     border-radius: 4px;
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
   }
 
-  .day::before {
-    /* content: ''; */
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 104%;
-    height: 104%;
-    border: 4px solid #333333;
-    border-radius: 18px;
-    transform: translate(-3%, -3%);
-  }
-
-    /* Today */
-  .day::after {
-    color: black;
-  }
-
-  .day.today{
+  .day.today {
     box-shadow: 1px 1px 6px -2px rgba(0, 153, 0, 0.9);
   }
   
-  .day.day.today:after{
+  .day.day.today:after {
     content: 'Cегодня в меню!';
     position: absolute;
     top: -15px;
     right: 5px;
     padding: 7px 20px;
-    font-size: 1.2em;
-    border-radius: 20px 0;
+    color: #000000;
     background-color: rgba(0, 153, 0, 1);
-    /* transform: rotate(45deg) translate(46px, -20px); */
+    border-radius: 20px 0;
   }
 
-  .day.day.past::after{
+  .day.day.past::after {
     content: 'А надо было раньше';
     position: absolute;
     top: -15px;
     right: 5px;
     padding: 0.5em 1.4em;
-    font-size: 1.2em;
-    border-radius: 20px 0;
+    color: #000000;
     background: rgba(244, 67, 54, 1);
-    /* transform: rotate(45deg) translate(62px, -30px); */
+    border-radius: 20px 0;
   }
 
   .day.day.forward:after {
@@ -209,107 +188,59 @@ export default {
     position: absolute;
     top: -15px;
     right: 5px;
-    padding: 0.5em 1.4em;
-    font-size: 1.2em;
-    border-radius: 20px 0;
+    padding: 0.3em 1.2em;
+    color: #000000;
     background: rgba(255,255,153, 1);
-    /* transform: rotate(45deg) translate(24px, -20px); */
+    border-radius: 20px 0;
   }
   
   .day__header {
     position: relative;
     margin-bottom: 35px;
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
     border-radius: 2px;
   }
   
   .day__header img {
     object-fit: cover;
-    display: block;
     position: relative;
-    width: 100%;
   }
 
   .day__name {
     position: absolute;
-    bottom: -37px;
-    left: 20px;
-    padding: 0.3em 0.5em;
-    font-size: 1.1em;
+    bottom: -30px;
+    left: 15px;
     font-weight: 700;
-    line-height: 1em;
-    color: #ffffff;
-    background-color: rgba(0, 0, 0, 0.9);
-    border-radius: 3px;
   }
 
   .day__price {
     position: absolute;
-    bottom: -37px;
-    right: 20px;
-    padding: 0.3em 0.5em;
-    font-size: 1.1em;
+    bottom: -30px;
+    right: 15px;
     font-weight: 700;
-    line-height: 1em;
-    color: #ffffff;
-    background-color: rgba(0, 0, 0, 0.9);
-    border-radius: 3px;
   }
 
   .day__list {
     list-style: none;
-    margin-bottom: 25px;
-    padding: 0 20px;
+    margin-bottom: 20px;
+    padding: 0 15px;
   }
 
   /* Dish */
   .dish {
     display: flex;
     justify-content: space-between;
-    padding: 8px 0;
+    padding: 8px 0 4px;
     border-bottom: 1px solid #cecece;
   }
 
   .dish__name {
     max-width: 80%;
-    font-weight: 700;
-    font-size: 1em;
+    font-size: 0.9em;
   }
 
   .dish__weight {
     margin-left: 5px;
-    font-size: 1em;
-  }
-  
-  @media (max-width: 992px) {
-    .day {
-        width: 70%;
-        margin: 0 auto;
-    }
-
-    .day__header {
-      font-size: 15px;
-    }
-
-    .dish {
-       font-size: 18px;
-     }
-  }
-
-  @media (max-width: 675px) {
-    .day {
-      width: 80%;
-      padding-bottom: 20px;
-      font-size: 13px;
-    }
-
-    .day__header {
-      font-size: 13px;
-    }
-
-    .dish {
-      font-size: 15px;
-     }
+    font-size: 0.8em;
   }
 
   /* buttons */
@@ -317,31 +248,46 @@ export default {
     display: flex;
     justify-content: space-between;
     margin-top: auto;
-    padding: 0 20px;
+    padding: 0 15px;
   }
 
-  .day__actions button {
+  .day__button {
     width: 48%;
-    padding: 7px 10px;
-    border: 1px solid #666666;
-    font: inherit;
-    font-size: 14px;
+    font-size: 12px;
     text-transform: uppercase;
-    overflow: hidden;
-    word-wrap: break-word;
-    transition: 0.1s;
+    border: 1px solid #333333;
   }
 
-  .day__actions button:hover:not(:disabled) {
-    color: #ffffff;
-    background-color: #666666;
+  .day__button:disabled {
+    color: #cecece;
+    border-color: #cecece;
+    cursor: initial;
   }
 
-  .day__actions button:active:not(:disabled) {
-    opacity: 0.8;
+  .day__button:hover:not(:disabled) {
+    color: var(--brand-color);
+    border-color: var(--brand-color);
+  }
+
+  .day__button:active:not(:disabled) {
+    opacity: 0.6;
+  }
+
+  @media (max-width: 992px) {
+    .day {
+      width: 60%;
+      margin: 0 auto;
+    }
+  }
+
+  @media (max-width: 675px) {
+    .day {
+      width: 100%;
+      max-width: 374px;
+      padding-bottom: 20px;
+    }
   }
   
-
   /* Details */
   #details-container{
     
