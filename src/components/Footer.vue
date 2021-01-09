@@ -125,6 +125,14 @@
   .footer__block_socials .footer__block-item:last-child {
     margin-right: 0;
   }
+
+  .footer__button:hover {
+    color: var(--brand-color); 
+  }
+
+  .footer__button:active {
+    opacity: 0.6;
+  }
   
   .footer__block-link {
     display: inline-block;
