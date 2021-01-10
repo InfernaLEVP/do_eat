@@ -1,15 +1,15 @@
 <template>
-  <div class="menu c_container">
-    
-    <h1 class="menu__title">Доставка <br> комплексных обедов</h1>
-    <!-- <div class="menu__slogan">Заказы принимаются до 11:30 утра</div> -->
-    <h2 style="color:#333;"> С наступающим Новым годом! </h2>
-
-    <p style="color:#333;">Доставка начнёт работу с 11.01.2021 🤙</p>
-
+  <div class="menu">
     <div class="menu__wrapper">
-
-      <swiper 
+      <h1 class="menu__title">
+        Доставка комплексных обедов<br> 
+        в Симферополе
+      </h1>
+      <p class="menu__order-info">
+        <em>Прием заказов: Пн. - Пт. до 11:30</em>
+      </p>
+      <div class="menu__swiper">
+        <swiper 
           v-if="isMobile"
           :slides-per-view="1"
           :space-between="20"
@@ -19,12 +19,14 @@
           @swiper="onSwiper"
           @slideChange="onSlideChange"
         > 
-        <swiper-slide v-for="day in menu" :key="day.day" :virtualIndex="day.index"><Day :obj="day"></Day></swiper-slide>
-      </swiper>
-      <div class="days__wrapper" v-else>
-        <Day  v-for="day in menu" :key="day.day" :obj="day"></Day>
+          <swiper-slide v-for="day in menu" :key="day.day" :virtualIndex="day.index">
+            <Day :obj="day"></Day>
+          </swiper-slide>
+        </swiper>
+        <div class="days__wrapper" v-else>
+          <Day v-for="day in menu" :key="day.day" :obj="day"></Day>
+        </div>
       </div>
-      
     </div>
   </div>
 </template>
@@ -86,144 +88,115 @@
 </script>
 
 <style>
-  .menu{
-    color: white;
-    font-size: 18px;
-    padding-top: 5rem;
-    /* background: url(../assets/background.jpg); */
-    background: #e5e5e5;
-    background-position: center;
-    background-size: cover;
+  .menu__wrapper {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 10px 50px 50px;
   }
-  @media(max-width: 992px){
-    .menu{
-      max-width: 100%;
-      font-size: 16px;
+
+  .menu__title {
+    font-size: 30px;
+    line-height: 1.2;
+  }
+
+  .menu__order-info {
+    line-height: 1.6;
+  }
+
+  .days__wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 20px;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 25px 0;
+  }
+
+  @media (max-width: 1050px) {
+    .menu__wrapper {
+      padding: 30px 40px;
     }
   }
 
-  .menu__wrapper{
-    display: flex;
-    width: 100%;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    /* padding-right: 10%; */
-    padding: 8rem 0;
-  }
-  @media(max-width: 992px){
-    .menu__wrapper{
-      flex-wrap: wrap;
-      padding: 1rem 0;
+  @media(max-width: 768px) {
+    .menu__wrapper {
+      padding: 20px;
+    }
+
+    .menu__title {
+      font-size: 22px;
+    }
+
+    .menu__order-info {
+      margin-bottom: 40px;
     }
   }
 
-  .menu__title{
-    margin-top: 0;
-    color: #333;  
-    text-align: left;
-    /* padding-left: 1.8rem; */
-    font-size: 1.8em;
-    padding-top: 25px;
-  }
-  @media(max-width: 992px)
-  {
-    .menu__title{
-      padding-left: 1.8rem;
-    }
-    .menu__title + h2{
-      padding-left: 1.8rem;
-    }
-    .menu__title + h2 + p{
-      padding-left: 1.8rem;
-    }
-  }
-  @media(max-width: 375px)
-  {
-    .menu__title{
-      padding-left: 1.3rem;
-      font-size: 1.5em;
-      padding-top: 15px;
-    }
-    .menu__title + h2{
-      padding-left: 1.3rem;
-      font-size: 1.5em;
-      padding-right: 30px;
-    }
-    .menu__title + h2 + p{
-      padding-left: 1.3rem;
-      font-size: 1.1em;
-      padding-right: 30px;
+   @media(max-width: 414px) {
+    .menu__title br {
+      display: none;
     }
   }
 
-  .menu__slogan{
-    color: #333; 
-    padding-left: 1.8rem; 
-    border-bottom: 2px solid red;
-    width: fit-content;
-    padding-right: 15px;
-    padding-bottom: 4px;
-  }
-  @media(max-width: 992px)
-  {
-    .menu__slogan{
-
-    }
-  }
-  @media(max-width: 375px)
-  {
-    .menu__slogan{
-      font-size: 0.8rem;
-      padding-left: 1.3rem;
-    }
+  .swiper-wrapper {
+    padding: 20px 0 40px;
   }
 
-  .days__wrapper{
-    display: flex;
-    width: 100%;
-    flex-wrap: wrap;
-    justify-content: space-between;
+  .swiper-pagination-bullet {
+    background: #cecece;
+    background: #333333;
   }
 
-  /* .swiper-slide{
-    padding: 10px;
-    max-width: calc(100vw - 70px);
-  } */
-
-  .menu.c_container{
-    padding: 0;
-  }
-  @media(min-width: 992px){
-    .menu.c_container{
-      padding-left: 4rem;
-      padding-right: 4rem;
-    }
-  }
-
-  .swiper-wrapper{
-    padding: 2rem 0px;
-  }
-  .swiper-pagination-bullet{
-    background: #e5e5e5;
-    background: #333;
-  }
-  .swiper-container-horizontal>.swiper-pagination-bullets, .swiper-pagination-custom, .swiper-pagination-fraction{
+  .swiper-container-horizontal>.swiper-pagination-bullets, .swiper-pagination-custom, .swiper-pagination-fraction {
     bottom: 0;
   }
-  .swiper-container{
-    padding-top: 15px;
-    padding-bottom: 40px;
+
+  .swiper-button-next {
+    right: 10%;
   }
-  .swiper-button-next{
-    right: 5px;
+
+  .swiper-button-prev {
+    left: 10%;
   }
-  .swiper-button-prev{
-    left: 5px;
-  }
-  .swiper-pagination-bullet{
-    width: 17vw;
+
+  .swiper-pagination-bullet {
+    width: calc(75% / 5);
     border-radius: 4px;
     border: 1px solid #d0d0d0;
-    box-shadow: 0 2px 3px rgba(0,0,0,0.28);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.28);
   }
+
+  @media (max-width: 600px) {
+    .swiper-button-next {
+      right: 2%;
+    }
+
+    .swiper-button-prev {
+      left: 2%;
+    }
+  }
+
+  @media (max-width: 510px) {
+    .swiper-button-next {
+      top: 25%;
+      right: 12%;
+    }
+
+    .swiper-button-prev {
+      top: 25%;
+      left: 12%;
+    }
+  }
+
+  @media (max-width: 414px) {
+    .swiper-button-next {
+      right: 2%;
+    }
+
+    .swiper-button-prev {
+      left: 2%;
+    }
+  }
+
 </style>

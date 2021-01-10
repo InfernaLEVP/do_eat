@@ -11,14 +11,13 @@
     <ul class="day__list">
       <li class="dish" v-for="item in obj.menu" :key="item[0]">
         <div class="dish__name">{{item[0]}}</div>
-        <div class="space"></div>
         <div class="dish__weight">{{item[1]}}</div>
       </li>
     </ul>
 
     <div class="day__actions">
-      <button class="md-trigger md-setperspective" data-modal="modal-18" :disabled="isPast()" @click="order">Заказать</button>
-      <button class="day__details" @click="showDetails">Подробнее</button>
+      <button class="day__button button md-trigger md-setperspective" data-modal="modal-18" :disabled="isPast()" @click="order">Заказать</button>
+      <button class="day__button button" @click="showDetails">Подробнее</button>
     </div>
     
   </div>
@@ -40,7 +39,6 @@
           <ul :class="[ 'day__list', isTeleported ? 'opened-list' : '']">
             <li class="dish" v-for="item in obj.menu" :key="item">
               <div class="dish__name">{{item}}</div>
-              <div class="space"></div>
               <div class="dish__weight">100гр.</div>
             </li>
           </ul>
@@ -146,198 +144,154 @@ export default {
 </script>
 
 <style>
-  .day{
-    padding: 20px;
-    /* background: rgba(51,51,51,.7); */
-    background: white;
+  .day {
     position: relative;
-    font-weight: 300;
-    line-height: 1.8;
-    text-transform: uppercase;
-    width: 26%;
-
-    background-color: #fbfbfb;
-    border-radius: 4px;
-    border: 1px solid #d0d0d0;
-    padding: 10px;
-    margin: 10px 0 20px 0;
-    padding-bottom: 15px;
-  }
-  @media(max-width: 992px){
-    .day{
-      width: 55%;
-      margin: 0 auto;
-    }
-  }
-  @media(max-width: 560px){
-    .day{
-      width: 75%;
-      margin: 0 auto;
-    }
-  }
-
-  .day:before{
-    /* content: ''; */
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 104%;
-    height: 104%;
-    border: 4px solid #333333;
-    border-radius: 18px;
-    transform: translate(-3%, -3%);
-  }
-
-  .day__header{
-    position: relative;
-    border-bottom: 2px solid white;
-
-    width: 116%;
-    left: -8%;
-    box-shadow: 0 2px 3px rgba(0,0,0,0.28);
-    border-radius: 2px;
     display: flex;
-  }
-  .day__header img{
-    object-fit: cover;
-    display: flex;
-    position: relative;
+    flex-direction: column;
     width: 100%;
+    max-width: 374px;
+    padding-bottom: 20px;
+    background-color: #ffffff;
+    border: 1px solid #cecece;
+    border-radius: 4px;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
   }
 
-  .day__name{
-    text-align: center;
-    padding-bottom: 2rem;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: white;
-    padding: 1px 7px;
-    color: black;
+  .day.today {
+    box-shadow: 1px 1px 6px -2px rgba(0, 153, 0, 0.9);
   }
-
-  .day__price{
-    text-align: center;
-    padding-bottom: 2rem;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    background: white;
-    padding: 1px 7px;
-    color: black;
-  }
-
-  .day__list{
-    list-style: none;
-    padding-left: 0;
-    position: relative;
-    z-index: 5;
-    color: #303030;
-    border-bottom: 1px solid #dadada;
-    border-top: 1px solid #dadada;
-    padding: 15px 0;
-  }
-
-  /* Today */
-  .day:after{
-    color: black;
-  }
-  .day.today{
-    /* background: rgba(51,51,51,.7); */
-    background: #fbfbfb;
-  }
-  .day.day.today:after{
+  
+  .day.day.today:after {
     content: 'Cегодня в меню!';
-    display: flex;
     position: absolute;
-    top: 0;
-    right: 0;
-    transform: rotate(45deg) translate(46px, -20px);
-    font-size: 13px;
-    z-index: 555;
-    background: rgba(6, 193, 103, 1);
-    border-radius: 8px;
-    padding: 0 7px;
+    top: -15px;
+    right: 5px;
+    padding: 7px 20px;
+    color: #000000;
+    background-color: rgba(0, 153, 0, 1);
+    border-radius: 20px 0;
   }
 
-  .day.day.past:after{
+  .day.day.past::after {
     content: 'А надо было раньше';
-    display: flex;
     position: absolute;
-    top: 0;
-    right: 0;
-    transform: rotate(45deg) translate(62px, -30px);
-    font-size: 13px;
-    z-index: 555;
+    top: -15px;
+    right: 5px;
+    padding: 0.5em 1.4em;
+    color: #000000;
     background: rgba(244, 67, 54, 1);
-    border-radius: 8px;
-    padding: 0 7px;
+    border-radius: 20px 0;
   }
 
-  .day.day.forward:after{
+  .day.day.forward:after {
     content: attr(data-foo) ' ';
-    display: flex;
     position: absolute;
-    top: 0;
-    right: 0;
-    transform: rotate(45deg) translate(24px, -20px);
-    font-size: 13px;
-    z-index: 555;
+    top: -15px;
+    right: 5px;
+    padding: 0.3em 1.2em;
+    color: #000000;
     background: rgba(255,255,153, 1);
-    border-radius: 8px;
-    padding: 0 7px;
+    border-radius: 20px 0;
+  }
+  
+  .day__header {
+    position: relative;
+    margin-bottom: 35px;
+    border-radius: 2px;
+  }
+  
+  .day__header img {
+    object-fit: cover;
+    position: relative;
   }
 
-  /* Buttons */
-  .day button{
-    position: relative;
-    z-index: 15;
-    font-size: 16px;
+  .day__name {
+    position: absolute;
+    bottom: -30px;
+    left: 15px;
+    font-weight: 700;
+  }
+
+  .day__price {
+    position: absolute;
+    bottom: -30px;
+    right: 15px;
+    font-weight: 700;
+  }
+
+  .day__list {
+    list-style: none;
+    margin-bottom: 20px;
+    padding: 0 15px;
   }
 
   /* Dish */
-  .dish{
-    display: flex;
-    font-size: 12px;
-    justify-content: space-between;
-    line-height: 1.1;
-    margin-bottom: 8.5px;
-  }
-  @media(max-width: 400px){
-    .dish{
-      font-size: 11px;
-    }
-  }
-  .dish__name{
-    white-space: nowrap;
-    /* max-width: 80%; */
-  }
-  .dish__weight{
-    text-transform: none;
-  }
-  .space{
-    flex: 1;
-    border-bottom: 1px dashed #303030;
-  }
-
-  .day__actions{
+  .dish {
     display: flex;
     justify-content: space-between;
+    padding: 8px 0 4px;
+    border-bottom: 1px solid #cecece;
   }
 
-  .day__actions button{
-    background: #e5e5e5;
-    border: none;
-    padding: 7px 10px;
+  .dish__name {
+    max-width: 80%;
+    font-size: 0.9em;
+  }
+
+  .dish__weight {
+    margin-left: 5px;
+    font-size: 0.8em;
+  }
+
+  /* buttons */
+  .day__actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto;
+    padding: 0 15px;
+  }
+
+  .day__button {
     width: 48%;
+    font-size: 12px;
+    text-transform: uppercase;
+    border: 1px solid #333333;
+  }
+
+  .day__button:disabled {
+    color: #cecece;
+    border-color: #cecece;
+    cursor: initial;
+  }
+
+  .day__button:hover:not(:disabled) {
+    color: var(--brand-color);
+    border-color: var(--brand-color);
+  }
+
+  .day__button:active:not(:disabled) {
+    opacity: 0.6;
+  }
+
+  @media (max-width: 992px) {
+    .day {
+      width: 60%;
+      margin: 0 auto;
+    }
   }
   .day__details{
     opacity: 0;
     pointer-events: none;
   }
 
+  @media (max-width: 675px) {
+    .day {
+      width: 100%;
+      max-width: 374px;
+      padding-bottom: 20px;
+    }
+  }
+  
   /* Details */
   #details-container{
     
