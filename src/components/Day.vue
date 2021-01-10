@@ -279,6 +279,10 @@ export default {
       margin: 0 auto;
     }
   }
+  .day__details{
+    opacity: 0;
+    pointer-events: none;
+  }
 
   @media (max-width: 675px) {
     .day {
